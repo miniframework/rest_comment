@@ -1,0 +1,230 @@
+$def with(result)	
+<style>
+table td {font-size:12px;}
+.delete-ground{
+background-color: rgb(247, 237, 237);
+border-color: rgb(232, 198, 199);
+}
+
+.delete-ground .badge{
+background-color: rgb(164, 30, 34);
+}
+.delete-ground h4 {
+color: rgb(164, 30, 34);
+font-size: 1.1em;
+margin: 0;
+padding: 15px 0 5px 0px;
+}
+.delete-ground p {
+color: rgb(51, 51, 51);
+}
+.delete-ground .api {
+color: black;
+font-size:16px;
+}
+.delete-ground .comment {
+color: rgb(164, 30, 34);
+}
+.get-ground{
+background-color: rgb(231, 240, 247);
+border-color: rgb(195, 217, 236);
+}
+
+.get-ground .badge{
+background-color: rgb(15, 106, 180);
+}
+.get-ground h4 {
+color: rgb(15, 106, 180);
+font-size: 1.1em;
+margin: 0;
+padding: 15px 0 5px 0px;
+}
+.get-ground p {
+color: rgb(51, 51, 51);
+}
+.get-ground .api {
+color: black;
+font-size:16px;
+}
+.get-ground .comment {
+color: rgb(15, 106, 180);
+}
+.post-ground{
+background-color: rgb(231, 246, 236);
+border-color: rgb(195, 232, 209);
+}
+
+.post-ground .badge{
+background-color: rgb(16, 165, 74);
+}
+.post-ground h4 {
+color: rgb(16, 165, 74);
+font-size: 1.1em;
+margin: 0;
+padding: 15px 0 5px 0px;
+}
+.post-ground p {
+color: rgb(51, 51, 51);
+}
+.post-ground .api {
+color: black;
+font-size:16px;
+}
+.post-ground .comment {
+color: rgb(16, 165, 74);
+}
+.put-ground{
+background-color: rgb(249, 242, 233);
+border-color: rgb(240, 224, 202);
+}
+
+.put-ground .badge{
+background-color: rgb(197, 134, 43);
+}
+.put-ground h4 {
+color: rgb(197, 134, 43);
+font-size: 1.1em;
+margin: 0;
+padding: 15px 0 5px 0px;
+}
+.put-ground p {
+color: rgb(51, 51, 51);
+}
+.put-ground .api {
+color: black;
+font-size:16px;
+}
+.put-ground .comment {
+color: rgb(197, 134, 43);
+}
+table.fullwidth tr td {
+border-top: 1px solid rgb(153, 153, 153);
+padding: 5px;
+font-size: 0.9em;
+color: rgb(102, 102, 102);
+}
+</style>
+<script>
+$$(document).ready(function() {
+	$$("#content").on("click", "input.js_submit", function() {
+
+		var text_obj = $$(this).parent().parent("form").find("textarea");
+		var data = "";
+		var restid = $$(this).attr('restid');
+		text_obj.each(function(i){
+			var attr = $$(this).attr('attr');
+			var value = $$(this).val();
+			data += attr+"="+value+"&";
+		})	
+		data += "id="+restid;
+		$$.ajax({
+			   type: "post",
+			   url: "/get_response",
+			   data: data,
+			   dataType:"json",
+			   success: function(jsonData){
+				   var html= '<h4>Request URL</h4> '+ 
+				    '<div class="block request_url"><pre>'+jsonData.url+'</pre></div> '+ 
+				    '<h4>Response Body</h4> '+
+				    '<div class="block response_body json"><pre>'+jsonData.body+'</pre></div> '+
+				    '<h4>Response Code</h4> '+
+				    '<div class="block response_code"><pre>'+jsonData.code+'</pre></div> '+
+				    '<h4>Response Headers</h4> '+
+				    '<div class="block respons_headers"><pre>'+jsonData.response+'</pre></div>';
+				$$("#response_"+restid).html(html);
+				$$("#response_"+restid).show("slow")
+			   }
+		});
+			
+	});
+});
+</script>
+<div class="container" id="content">
+	<div class="accordion">
+	$for rest in result:
+		  <div class="accordion-group">
+		    <div class="accordion-heading">
+		      <a class="accordion-toggle $rest['method']-ground" data-toggle="collapse" data-parent="#accordion$loop.index" href="#collapse_href$loop.index">
+			<span class="badge get-badge">$rest['method']</span>
+			<span class="api"> $rest['api']</span><span class="comment pull-right">$rest['comment']</span>
+		      </a>
+		    </div>
+		    <div id="collapse_href$loop.index" class="accordion-body collapse $rest['method']-ground ">
+		      <div class="accordion-inner">
+			$if  rest['summary']:
+				<h4>接口说明</h4>
+				<p>$rest['summary']</p>
+
+			$if  json_loads(rest['params']): 
+			<form>
+				<h4>参数</h4>
+				<table class="fullwidth">
+					<tr>
+						<th style="width: 200px; max-width: 200px"></th>
+						<th style="width: 150px; max-width: 150px"></th>
+						<th style="width: 300px; max-width: 300px"></th>
+						<th style="width: 310px; max-width: 310px"></th>
+					</tr>
+				$for param in json_loads(rest['params']):	
+					<tr>
+						<td class="code required">$param['param']</td>
+						<td>$param['type']</td>
+						<td>
+							$if param['required'] == "1": 
+								$ holder = "(required)"
+							$else:
+								$ holder = "(unrequired)"
+						<textarea class="text_area" attr="$param['param']" placeholder="$holder" ></textarea>
+						</td>
+						<td>$param['descript']</td>
+					</tr>
+				</table>
+				$if rest['method'] == 'post' or rest['method'] == 'get':
+					<div>
+						<input class="btn js_submit" restid="$rest['id']"  type="button" value="获取">
+					</div>
+				<div id="response_$rest['id']" style="display:none">
+				</div>
+			</form>
+
+			$if  json_loads(rest['returns']): 
+				<h4>返回值</h4>
+				<table class="fullwidth">
+					<tr>
+						<th style="width: 200px; max-width: 200px"></th>
+						<th style="width: 150px; max-width: 150px"></th>
+						<th style="width: 610px; max-width: 610px"></th>
+					</tr>
+				$for re in json_loads(rest['returns']):	
+					<tr>
+						<td>$re['rparam']</td>
+						<td>$re['rtype']</td>
+						<td>$re['rdescript']</td>
+					</tr>
+				</table>
+			$if  json_loads(rest['codes']): 
+				<h4>状态码</h4>
+				<table class="fullwidth">
+					<tr>
+						<th style="width: 200px; max-width: 200px"></th>
+						<th style="width: 810px; max-width: 810px"></th>
+					</tr>
+				$for co in json_loads(rest['codes']):	
+					<tr>
+						<td>$co['code']</td>
+						<td>$co['codenote']</td>
+					</tr>
+				</table>
+			
+
+			$if rest['demo']:
+				<h4>DEMO</h4>
+				<pre>$rest['demo']</pre>
+
+			<a href="/modify_rest/$rest['id']" class="btn btn-mini">修改</a>
+		      </div>
+		    </div>
+		  </div>
+		  <p></p>
+	</div>
+</div>

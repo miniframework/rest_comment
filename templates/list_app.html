@@ -1,0 +1,30 @@
+$def with(result)	
+<div class="container">
+	<a href="/add_app" class="btn btn-primary"><i class="icon-plus icon-white"></i>添加</a>
+	<br/>
+	<br/>
+<style>
+table td {font-size:12px;}
+</style>
+	<table class="table table-striped">
+		<tr>
+			<th style="width:100px;">名称</th>
+			<th style="width:300px;">地址</th>
+			<th style="width:500px;">描述</th>
+			<th ><span class="pull-right"> 操作</span></th>
+		</tr>
+	$for row in result:
+		<tr>
+			<td>$row.title</td> 
+			<td>$row.url</td>
+			<td>$row.summary</td>
+			<td>
+				<div class="btn-group pull-right">
+				<a href="/modify_app/$row.id" data-original-title="修改信息"  class="btn btn-warning btn-mini tooltip-info"><i class="icon-edit icon-white"></i></a>
+				<a href="/list_rest/$row.id" data-original-title="查看rest接口" class="btn btn-info btn-mini tooltip-info"><i class="icon-eye-open icon-white"></i></a>
+				<a href="/add_rest/$row.id" data-original-title="添加rest接口" class="btn btn-primary btn-mini tooltip-info"><i class="icon-plus icon-white"></i></a>
+				</div>
+			</td>
+		</tr>
+</table>
+</div>

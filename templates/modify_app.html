@@ -1,0 +1,35 @@
+$def with(app,info)
+<div class="container">
+	<ul class="breadcrumb">
+	  <li><a href="/list_app">列表</a> <span class="divider">/</span></li>
+	  <li class="active">修改</li>
+	</ul>
+	$if info:
+		<div class="alert alert-error">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		<strong>$info</strong>
+		</div>
+
+	<form class="form-horizontal" method="post" action="/modify_app/$app.id">
+		<div class="control-group">
+			<label>标题</label>
+			<div class="controls" style="margin-left:0px">
+				<input type="text" value="$app.title" id="title"  name="title"  style="height:30px"> <br/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label>基地址</label>
+			<div class="controls" style="margin-left:0px">
+				<input class="input-xlarge" type="text" value="$app.url" id="url"  name="url" placeholder="http://" style="height:30px"> <br/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label>描述</label>
+			<div class="controls" style="margin-left:0px">
+				<textarea style="width:400px;height:60px;"  name="summary">$app.summary</textarea>
+			</div>
+		</div>
+		<input type="hidden" value="$app.id" name="id">
+		<input  type="submit" class="btn" value="提交">
+	</form>
+</div>

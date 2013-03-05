@@ -1,0 +1,235 @@
+$def with(id,result,info)
+<div class="container" id="content">
+<script>
+$$(document).ready(function() {
+	
+	var get_alert = function(js_data,js_num) {
+		var alert_html = $$("#"+js_data+"_html").val();
+		alert_html = alert_html.replace(/\{num\}/g,js_num);	
+		$$("."+js_data+"_box").append(alert_html);
+	}
+	var alert_arr = ['add_code','add_return','add_params'];
+/*
+	for(var i =0; i<alert_arr.length; i++)
+	{
+		get_alert(alert_arr[i],0);
+		
+	}
+*/
+	$$("#content").on("click", "a.js_alert", function() {
+		var js_data = $$(this).attr('js_data');	
+		var js_num = Number($$(this).attr('js_num'));	
+		js_num+=1;
+		get_alert(js_data,js_num);
+		$$(this).attr('js_num',js_num);
+	});
+});
+</script>
+<textarea class="hide" id="add_code_html">
+			<div class="alert alert-block alert-error" >
+				<button type="button" class="close" data-dismiss="alert">×</button>
+				<div class="control-group">
+					<label>状态码</label>
+					<div class="controls" style="margin-left:0px">
+						<input  type="text"   name="code"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. 500,400,404)</font><br/>
+					</div>
+					<label>说明</label>
+					<div class="controls" style="margin-left:0px">
+						<input class="input-xxlarge" type="text"   name="codenote"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. 400:Invalid username, 404:User not found)</font> 
+					</div>
+				</div>
+			</div>
+</textarea>
+<textarea  class="hide" id="add_return_html">
+			<div class="alert alert-block alert-info" >
+				<button type="button" class="close" data-dismiss="alert">×</button>
+				<div class="control-group">
+					<label>返回字段</label>
+					<div class="controls" style="margin-left:0px">
+						<input  type="text"   name="rparams"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. city)</font><br/>
+					</div>
+					<label>数据类型</label>
+					<div class="controls" style="margin-left:0px">
+						<input  type="text"   name="rtypes"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. int)</font> 
+					</div>
+					<label>说明</label>
+					<div class="controls" style="margin-left:0px">
+						<input class="input-xxlarge" type="text"   name="rdescript"  style="height:30px"> <font color="rgb(217,237,247)">(ep. user‘s city.)</font>
+					</div>
+				</div>
+			</div>
+</textarea>
+<textarea class="hide" id="add_params_html">
+			<div class="alert alert-block">
+				<button type="button" class="close" data-dismiss="alert">×</button>
+				<div class="control-group">
+					<label>参数</label>
+					<div class="controls" style="margin-left:0px">
+						<input  type="text"   name="params"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. username)</font><br/>
+					</div>
+					<label>数据类型</label>
+					<div class="controls" style="margin-left:0px">
+						<input  type="text"   name="types"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. String)</font> 
+					</div>
+					<label>说明</label>
+					<div class="controls" style="margin-left:0px">
+						<input class="input-xxlarge" type="text"   name="descript"  style="height:30px"> <font color="rgb(217,237,247)">(ep. The name that needs to be fetched)</font>
+					</div>
+					<br/>
+					<input type="radio" style="margin-top: -3;" name="required[{num}]" checked value="0" > 可选 
+					<input type="radio" style="margin-top: -3;" name="required[{num}]" value="1"> 必选 
+					<input type="hidden" name="require_index" value="{num}" />
+				</div>
+			</div>
+</textarea>
+	$if info:
+		<div class="alert alert-error">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		<strong>$info</strong>
+		</div>
+	<form class="form-horizontal" method="post" action="/modify_rest/$id">
+		<div class="control-group">
+			<label>接口地址</label>
+			<div class="controls" style="margin-left:0px">
+				<input value="$result.api" type="text" class="input-xlarge" id="api"  name="api"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. /user.json/{username})</font>
+			</div>
+		</div>
+		<div class="control-group">
+			<input type="radio" 
+			$if result.method == "get":
+				checked						
+			 style="margin-top: -3;"  name="method" value="get"> GET 
+			<input type="radio" 
+			$if result.method == "post":
+				checked	
+			style="margin-top: -3;" name="method" value="post"> POST 
+			<input type="radio" 
+			$if result.method == "put":
+				checked						
+			style="margin-top: -3;" name="method" value="put"> PUT 
+			<input type="radio" 
+			$if result.method == "delete":
+				checked						
+			style="margin-top: -3;" name="method" value="delete"> DELETE 
+		</div>
+		<div class="control-group">
+			<label>简短描述</label>
+			<div class="controls" style="margin-left:0px">
+				<input type="text"  value="$result.comment" class ="input-xlarge" id="comment"  name="comment"  style="height:30px"> <font color="rgb(217, 237, 247)" >(ep. Get user by user name)</font>
+
+			</div>
+		</div>
+		<div class="control-group">
+			<label>接口说明</label>
+			<div class="controls" style="margin-left:0px">
+				<textarea style="width:400px;height:60px;" name="summary">$result.summary</textarea>
+				<br/>
+				<font color="rgb(217, 237, 247)">(ep. This can only be done by the logged in user)</font>
+
+			</div>
+		</div>
+		<div class="control-group">
+			<label>接口人</label>
+			<div class="controls" style="margin-left:0px">
+				<input type="text" value="$result.author" class="input-xlarge" id="author"  name="author"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. jizz@gmail.com)</font>
+			</div>
+		</div>
+		<div class="control-group">
+			<label>接口输出demo</label>
+			<div class="controls" style="margin-left:0px">
+				<textarea style="width:500px;height:200px;" name="demo">$result.demo</textarea>
+<pre style="background-color: rgb(248, 253, 239);" class="pull-right">
+{
+    "id": 1404376560,
+    "screen_name": "zaku",
+    "name": "zaku",
+    "province": "11",
+    "city": "5",
+    "location": "北京 朝阳区",
+    "description": "人生五十年",
+}
+</pre>
+
+			</div>
+		</div>
+
+
+
+		$ param_list = json_loads(result.params)
+		<legend><a js_data="add_params" js_num="$(len(param_list)-1)"  href="javascript:void(0);" data-original-title="增加参数项" style="background-color: rgb(248, 148, 6);" class="label tooltip-info js_alert">+增加参数</a></legend>
+		<div class="add_params_box">
+			$for param in param_list:
+				<div class="alert alert-block">
+					<button type="button" class="close" data-dismiss="alert">×</button>
+					<div class="control-group">
+						<label>参数</label>
+						<div class="controls" style="margin-left:0px">
+							<input value="$param['param']"   type="text"   name="params"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. username)</font><br/>
+						</div>
+						<label>数据类型</label>
+						<div class="controls" style="margin-left:0px">
+							<input  type="text" value="$param['type']"  name="types"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. String)</font> 
+						</div>
+						<label>说明</label>
+						<div class="controls" style="margin-left:0px">
+							<input class="input-xxlarge"  value="$param['descript']" type="text"   name="descript"  style="height:30px"> <font color="rgb(217,237,247)">(ep. The name that needs to be fetched)</font>
+						</div>
+						<br/>
+						<input type="radio" style="margin-top: -3;" 
+						$if param['required'] == "0":
+							checked	
+						name="required[$loop.index0]" checked value="0" > 可选 
+						<input type="radio" style="margin-top: -3;"
+						$if param['required'] == "1":
+							checked	
+						name="required[$loop.index0]" value="1"> 必选 
+						<input type="hidden" name="require_index" value="$loop.index0" />
+					</div>
+				</div>
+
+		</div>
+		$ re_list = json_loads(result.returns)
+		<legend><a js_data="add_return" js_num="$(len(re_list)-1)"  href="javascript:void(0);" data-original-title=“添加返回值字段" style="background-color: rgb(248, 148, 6);" class="label tooltip-info js_alert">+返回字段</a></legend>
+		<div class="add_return_box">
+			$for re in re_list: 
+				<div class="alert alert-block alert-info" >
+					<button type="button" class="close" data-dismiss="alert">×</button>
+					<div class="control-group">
+						<label>返回字段</label>
+						<div class="controls" style="margin-left:0px">
+							<input  type="text" value="$re['rparam']"   name="rparams"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. city)</font><br/>
+						</div>
+						<label>数据类型</label>
+						<div class="controls" style="margin-left:0px">
+							<input  type="text"  value="$re['rtype']" name="rtypes"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. int)</font> 
+						</div>
+						<label>说明</label>
+						<div class="controls" style="margin-left:0px">
+							<input class="input-xxlarge"  value="$re['rdescript']" type="text"   name="rdescript"  style="height:30px"> <font color="rgb(217,237,247)">(ep. user‘s city.)</font>
+						</div>
+					</div>
+				</div>
+				
+		</div>
+		$ co_list = json_loads(result.codes)
+		<legend><a js_data="add_code" js_num="$(len(co_list)-1)"  href="javascript:void(0);" data-original-title="增加状态项" style="background-color: rgb(248, 148, 6);" class="label tooltip-info js_alert">+增加状态</a></legend>
+		<div class="add_code_box">
+			$for code  in co_list:
+				<div class="alert alert-block alert-error" >
+					<button type="button" class="close" data-dismiss="alert">×</button>
+					<div class="control-group">
+						<label>状态码</label>
+						<div class="controls" style="margin-left:0px">
+							<input  type="text" value="$code['code']"  name="code"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. 500,400,404)</font><br/>
+						</div>
+						<label>说明</label>
+						<div class="controls" style="margin-left:0px">
+							<input class="input-xxlarge" value="$code['codenote']" type="text"   name="codenote"  style="height:30px"> <font color="rgb(217, 237, 247)">(ep. 400:Invalid username, 404:User not found)</font> 
+						</div>
+					</div>
+				</div>
+		</div>
+		<input type="hidden" value="$id" name="id">
+		<input  type="submit" class="btn" value="提交">
+	</form>
+</div>
