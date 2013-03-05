@@ -1,4 +1,6 @@
 rest_comment
 ============
 
-rest 文档注释
+install web.py
+
+python rest.py 127.0.0.1:4000 scgi
