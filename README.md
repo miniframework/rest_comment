@@ -15,5 +15,6 @@ Alias /static /xxxxxx/static
 
 python rest.py 127.0.0.1:4000 scgi
 
+.
 
 
